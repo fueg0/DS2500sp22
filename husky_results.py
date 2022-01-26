@@ -184,4 +184,8 @@ print("We had exactly one power play on %d dates this year!" % pp_counter)
 # HW Visualizations
 ###########
 
-# make
+
+# range from 0 or 1 to max_nested of goals with numpy, tuple each value with a counter
+# remove all tags with remove_keys except goals
+# iterate through goals-only dict and 
+
