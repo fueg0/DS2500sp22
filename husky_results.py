@@ -7,11 +7,12 @@
 # IMPORTS
 import csv
 import matplotlib.pyplot as plt
-import numpy
-
+import numpy as np
+from collections import Counter
 
 # GLOBAL VARIABLES
-x = 1
+fig, ax = plt.subplots()
+fig, bx = plt.subplots()
 
 
 # FUNCTIONS
@@ -38,7 +39,6 @@ def transform_hockey(string_list, column):
 
 
 # Function 2- Dict of Dict, list of string -> Dict of String
-# TODO: Dictionary changes size during iteration. Use safe copy I guess :(
 def clean_data(nested_dict, selected_fields):
     nested_dict = remove_keys(nested_dict, selected_fields, keep=True)
 
@@ -67,6 +67,7 @@ def max_nested(nested_dict, selected_field):
 
     return field_values[maximum], maximum
 
+
 ###########
 # Helper Functions
 ###########
@@ -82,7 +83,7 @@ def double_list_to_dict(data, fields):
 
 
 # Turns a CSV into a lists of string arrays, where each string array represents a line from the csv file
-# Yes I know python functions shouldn't have numbers in their name, but it's the most accurate name
+### I know python functions shouldn't have numbers in their name, but it's the most accurate name
 def csv_to_2DList(filename):
     file = []
 
@@ -143,7 +144,7 @@ max_assists = -1
 max_assists_date = "0/0/0"
 for assist_key, assist_values in cleaned_data.items():
     if assist_values["A"] > max_assists:
-        max_assists = assist_values["G"]
+        max_assists = assist_values["A"]
         max_assists_date = assist_key
 
 print("We got the most assists (%d assists!) on %s" % (max_assists, max_assists_date))
@@ -158,7 +159,7 @@ for block_key, block_values in cleaned_data.items():
         max_blocks = block_values["BLK"]
         max_blocks_date = block_key
 
-print("We got the most assists (%d assists!) on %s" % (max_blocks, max_blocks_date))
+print("We got the most blocks (%d blocks!) on %s" % (max_blocks, max_blocks_date))
 
 ##########
 # On how many dates did we: win?
@@ -183,9 +184,28 @@ print("We had exactly one power play on %d dates this year!" % pp_counter)
 ###########
 # HW Visualizations
 ###########
+goal_range = np.arange(0, (max_goals + 1))
+cleaned_for_goals = remove_keys(cleaned_data.copy(), ["G"], keep=True)
+all_goals = []
+
+for goal_data in cleaned_for_goals.values():
+    for goal_count in goal_data.values():
+        all_goals.append(goal_count)
+
+# https://www.geeksforgeeks.org/python-find-most-frequent-element-in-a-list/
+mode_goal = Counter(all_goals).most_common(1)[0][1]
+
+ax.set(xlim=(0, max_goals), xticks=np.arange(0, (max_goals + 2)),
+       ylim=(0, mode_goal), yticks=np.arange(0, mode_goal, 2))
+
+ax.hist(all_goals, bins=(max_goals + 1), align='mid', range=[0, (max_goals + 1)], linewidth=0.5, edgecolor="black")
+# TODO: Add labeling to ax
+# TODO: Add grid https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.grid.html#
 
 
-# range from 0 or 1 to max_nested of goals with numpy, tuple each value with a counter
-# remove all tags with remove_keys except goals
-# iterate through goals-only dict and 
+cleaned_for_plot = remove_keys(cleaned_data.copy(), ["A", "BLK"], keep=True)
+for stats in cleaned_for_plot.values():
+    bx.scatter(stats["BLK"], stats["A"], color="black")
+# TODO: Add labeling to bx
 
+plt.show()
