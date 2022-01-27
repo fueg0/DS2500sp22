@@ -16,7 +16,6 @@ fig, bx = plt.subplots()
 
 
 # FUNCTIONS
-
 # Function 1- 2DList of String, int -> Dict
 def transform_hockey(string_list, column):
     hockey_transformed_dict = {}
@@ -44,7 +43,7 @@ def clean_data(nested_dict, selected_fields):
 
     for keys, values in nested_dict.items():
         for nested_key in values:
-            # Dynamic type-casting, will work if string CAN BE CONVERTED to int, else pass the exception
+            # Dynamic type-casting, if string CAN BE CAST to int then cast, else pass on exception and leave un-cast
             # from https://stackoverflow.com/questions/8075877/converting-string-to-int-using-try-except-in-python/8075959
             try:
                 nested_dict[keys][nested_key] = int(nested_dict[keys][nested_key])
@@ -184,7 +183,8 @@ print("We had exactly one power play on %d dates this year!" % pp_counter)
 ###########
 # HW Visualizations
 ###########
-goal_range = np.arange(0, (max_goals + 1))
+
+# A histogram showing the number of games in which we scored 0, 1..., n goals.
 cleaned_for_goals = remove_keys(cleaned_data.copy(), ["G"], keep=True)
 all_goals = []
 
@@ -202,10 +202,12 @@ ax.hist(all_goals, bins=(max_goals + 1), align='mid', range=[0, (max_goals + 1)]
 # TODO: Add labeling to ax
 # TODO: Add grid https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.grid.html#
 
+# A scatter plot of shots blocked on the x-axis vs. assists on the y-axis.
 
 cleaned_for_plot = remove_keys(cleaned_data.copy(), ["A", "BLK"], keep=True)
 for stats in cleaned_for_plot.values():
     bx.scatter(stats["BLK"], stats["A"], color="black")
 # TODO: Add labeling to bx
+# TODO: Add grid, this is illegible
 
 plt.show()
