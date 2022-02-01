@@ -9,12 +9,16 @@
 import csv
 import math
 import numpy as np
-import pandas
+import pandas as pd
 import matplotlib.pyplot as plt
 from haversine import haversine as hs
 
 
 # GLOBAL VARIABLES
+station_df = pd.read_csv("stations.csv", columns=["Station ID", "Weather ID", "Lat", "Long"])
+temp_df = pd.read_csv("temp.csv", columns=["Station ID", "Weather ID", "Month", "Day", "Temp"])
+print(station_df)  # TODO: remove print
+print(temp_df)  # TODO: remove print
 fig, ax = plt.subplots()
 fig2, bx = plt.subplots()
 
@@ -27,13 +31,26 @@ def haversine(lat1, long1, lat2, long2):
     return hs(lat1, long1, lat2, long2)
 
 
-# pass file to csv_to_2DList, append header array at index 0,
-# 2DList to array of dict. loop through array. For index in list,
-# feed lat and long keys plus lat+long args into distance_fxn.
-# if output is under
 # dataframe, distance function, float, float, float -> dataframe + distance column
 def add_distance(dataframe, distance_fxn, lat, long, max_distance):
+    df = dataframe.copy()
+    filtered_df = df.drop(df.columns.difference(['Lat', 'Long']), 1, inplace=True)
+    drop_indexes = []
+    distances = []
 
+    for index, row in filtered_df.iterrows():
+        haversine_distance = distance_fxn(lat, long, row["Lat"], row["Long"])
+
+        if haversine_distance > max_distance:
+            drop_indexes.append(index)
+        else:
+            distances.append(haversine_distance)
+
+    filtered_df.drop(labels=drop_indexes)
+    filtered_df["Distance"] = distances
+    print(filtered_df)  # TODO: remove print
+
+    return filtered_df
 
 
 #
