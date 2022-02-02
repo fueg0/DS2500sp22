@@ -13,7 +13,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from haversine import haversine as hs
 
-
 ### GLOBAL VARIABLES
 station_df = pd.read_csv("stations.csv", names=["stn", "Weather ID", "lat", "long"])
 temp_df = pd.read_csv("temp.csv", names=["stn", "Weather ID", "month", "day", "temp"])
@@ -97,14 +96,30 @@ def main():
     temp_cleaned = temp_cleaned[temp_cleaned["day"] <= 27]
     print(temp_cleaned)
 
+    lo_temps = []
+    for i in range(0, 27):
+        lo_temps.append([])
+
+    for index, row in temp_cleaned.iterrows():
+        lo_temps[int(row["day"] - 1)].append(row["temp"])
+
+    for i in range(len(lo_temps)):
+        lo_temps[i] = sum(lo_temps[i]) / len(lo_temps[i])
+
+    print(lo_temps)
+
+    x = np.arange(1, len(lo_temps) + 1)
+
     plt.figure(1)
+    # TODO: xticks, xlabels, yticks, etc
+    plt.plot(x, lo_temps)
     plot_first(station_cleaned)
     plt.figure(2)
     plot_second(station_cleaned)
+    plt.show()
 
     exit(0)
 
 
 if __name__ == '__main__':
     main()
-
